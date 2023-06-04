@@ -1,8 +1,12 @@
+"""This file contains the app layout"""
+
 # MANAGE ENVIRONNEMENT
 import os
 import streamlit as st
 import plotly.express as px
-from load_data import load_data, render_svg
+from load_process_data import (load_data,
+                               render_svg,
+                               create_column_text)
 
 
 url = "https://data.montpellier3m.fr/sites/default/files/ressources/TAM_MMM_TpsReel.csv"
@@ -30,8 +34,11 @@ new_names = {'trip_headsign': 'destination',
 
 data = data.rename(columns=new_names)
 
-data['delay_min'] = data['delay_sec'] / 60
-data['delay_min'] = data['delay_min'].astype(int)
+# Create some columns to display waiting times correctly
+data['delay_min'] = (data['delay_sec'] / 60).astype(int)
+data['delay_hour'] = data['delay_min'].apply(lambda x: x // 60)
+data['delay_remain_mins'] = data['delay_min'].apply(lambda x: x % 60)
+
 
 # Title of the app
 st.markdown("""## Real-time public transport traffic in Montpellier""")
@@ -81,10 +88,8 @@ with col2_box:
 
     st.dataframe(filtered_data[['departure']], width=280)
 
-filtered_data['text_hover'] = 'Departure: ' + \
-                     filtered_data['departure'].astype(str) + \
-                     '<br>Delay : ' + filtered_data["delay_min"]\
-                     .astype(str) + ' mins'
+# Add text column to filtered_data
+filtered_data = create_column_text(df=filtered_data)
 
 # Create a bar chart with Plotly
 fig = px.bar(filtered_data, x='departure', y='delay_min',
