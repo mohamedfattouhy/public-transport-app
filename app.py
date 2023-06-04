@@ -67,14 +67,12 @@ col1, col2 = st.columns(2)
 
 with col1:
     trip_headsigns = sorted(data['destination'].unique())
-    selected_destination = st.selectbox("Select a destination",
-                                        trip_headsigns, trip_headsigns.index('MOSSON'))
+    selected_destination = st.selectbox("Select a destination", trip_headsigns)
     filtered_data = data[data['destination'] == selected_destination]
 
 with col2:
     stop_list = sorted(filtered_data['stop'].unique())
-    selected_arret = st.selectbox("Select a stop", stop_list,
-                                  stop_list.index('HOP. LAPEYRONIE'))
+    selected_arret = st.selectbox("Select a stop", stop_list)
 
 # Page split into 3 columns
 col1_box, col2_box, col3_box = st.columns([1, 2, 1])
