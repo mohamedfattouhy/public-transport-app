@@ -74,13 +74,17 @@ with col2_box:
     filtered_data = data[data['destination'] == selected_destination]
     filtered_data = filtered_data[filtered_data['stop'] == selected_arret]\
                                                          .set_index('stop')
+    filtered_data = filtered_data.sort_values('departure')
+
     st.markdown('\n')
     st.write("Timetable for destination :", selected_destination)
+
     st.dataframe(filtered_data[['departure']], width=280)
 
-data['text_hover'] = 'Departure: ' + data['departure'].astype(str) + \
-                     '<br>Delay : ' + data["delay_min"].astype(str) + \
-                     ' mins'
+filtered_data['text_hover'] = 'Departure: ' + \
+                     filtered_data['departure'].astype(str) + \
+                     '<br>Delay : ' + filtered_data["delay_min"]\
+                     .astype(str) + ' mins'
 
 # Create a bar chart with Plotly
 fig = px.bar(filtered_data, x='departure', y='delay_min',
@@ -90,10 +94,10 @@ fig = px.bar(filtered_data, x='departure', y='delay_min',
 
 fig.update_layout(xaxis_title='Departure time',
                   yaxis_title='Time to arrival (in min)')
-fig.update_traces(hovertemplate=data["text_hover"])
+fig.update_traces(hovertemplate=filtered_data["text_hover"])
 
 # Change colorbar title
-fig.update_coloraxes(colorbar_title='Delay (sec)')
+fig.update_coloraxes(colorbar_title='Delay (min)')
 
 # Display the graph in app
 st.plotly_chart(fig)
