@@ -66,19 +66,21 @@ st.markdown('\n')
 col1, col2 = st.columns(2)
 
 with col1:
-    trip_headsigns = data['destination'].unique()
-    selected_destination = st.selectbox("Select a destination", trip_headsigns)
+    trip_headsigns = sorted(data['destination'].unique())
+    selected_destination = st.selectbox("Select a destination",
+                                        trip_headsigns, trip_headsigns.index('MOSSON'))
+    filtered_data = data[data['destination'] == selected_destination]
 
 with col2:
-    stop_list = data['stop'].unique()
-    selected_arret = st.selectbox("Select a stop", stop_list)
+    stop_list = sorted(filtered_data['stop'].unique())
+    selected_arret = st.selectbox("Select a stop", stop_list,
+                                  stop_list.index('HOP. LAPEYRONIE'))
 
 # Page split into 3 columns
 col1_box, col2_box, col3_box = st.columns([1, 2, 1])
 
 # Contenu de la colonne centrale
 with col2_box:
-    filtered_data = data[data['destination'] == selected_destination]
     filtered_data = filtered_data[filtered_data['stop'] == selected_arret]\
                                                          .set_index('stop')
     filtered_data = filtered_data.sort_values('departure')
